@@ -1,0 +1,162 @@
+[
+  {
+    "name": "Bronze I",
+    "tier": "BRONZE",
+    "division": 1,
+    "minPoints": 0,
+    "maxPoints": 999,
+    "color": "#CD7F32",
+    "effect": "bronze",
+    "image": "thumbnail/levels/bronze-1.png"
+  },
+  {
+    "name": "Bronze II",
+    "tier": "BRONZE",
+    "division": 2,
+    "minPoints": 1000,
+    "maxPoints": 1999,
+    "color": "#CD7F32",
+    "effect": "bronze",
+    "image": "thumbnail/levels/bronze-2.png"
+  },
+  {
+    "name": "Bronze III",
+    "tier": "BRONZE",
+    "division": 3,
+    "minPoints": 2000,
+    "maxPoints": 2999,
+    "color": "#CD7F32",
+    "effect": "bronze",
+    "image": "thumbnail/levels/bronze-3.png"
+  },
+  {
+    "name": "Silver I",
+    "tier": "SILVER",
+    "division": 1,
+    "minPoints": 3000,
+    "maxPoints": 3999,
+    "color": "#C0C0C0",
+    "effect": "silver",
+    "image": "thumbnail/levels/silver-1.png"
+  },
+  {
+    "name": "Silver II",
+    "tier": "SILVER",
+    "division": 2,
+    "minPoints": 4000,
+    "maxPoints": 4999,
+    "color": "#C0C0C0",
+    "effect": "silver",
+    "image": "thumbnail/levels/silver-2.png"
+  },
+  {
+    "name": "Silver III",
+    "tier": "SILVER",
+    "division": 3,
+    "minPoints": 5000,
+    "maxPoints": 5999,
+    "color": "#C0C0C0",
+    "effect": "silver",
+    "image": "thumbnail/levels/silver-3.png"
+  },
+  {
+    "name": "Gold I",
+    "tier": "GOLD",
+    "division": 1,
+    "minPoints": 6000,
+    "maxPoints": 6999,
+    "color": "#FFD700",
+    "effect": "gold",
+    "image": "thumbnail/levels/gold-1.png"
+  },
+  {
+    "name": "Gold II",
+    "tier": "GOLD",
+    "division": 2,
+    "minPoints": 7000,
+    "maxPoints": 7999,
+    "color": "#FFD700",
+    "effect": "gold",
+    "image": "thumbnail/levels/gold-2.png"
+  },
+  {
+    "name": "Gold III",
+    "tier": "GOLD",
+    "division": 3,
+    "minPoints": 8000,
+    "maxPoints": 8999,
+    "color": "#FFD700",
+    "effect": "gold",
+    "image": "thumbnail/levels/gold-3.png"
+  },
+  {
+    "name": "Platinum I",
+    "tier": "PLATINUM",
+    "division": 1,
+    "minPoints": 9000,
+    "maxPoints": 9999,
+    "color": "#EDF9FF",
+    "effect": "platinum",
+    "image": "thumbnail/levels/platinum-1.png"
+  },
+  {
+    "name": "Platinum II",
+    "tier": "PLATINUM",
+    "division": 2,
+    "minPoints": 10000,
+    "maxPoints": 10999,
+    "color": "#EDF9FF",
+    "effect": "platinum",
+    "image": "thumbnail/levels/platinum-2.png"
+  },
+  {
+    "name": "Platinum III",
+    "tier": "PLATINUM",
+    "division": 3,
+    "minPoints": 11000,
+    "maxPoints": 11999,
+    "color": "#EDF9FF",
+    "effect": "platinum",
+    "image": "thumbnail/levels/platinum-3.png"
+  },
+  {
+    "name": "Diamond I",
+    "tier": "DIAMOND",
+    "division": 1,
+    "minPoints": 12000,
+    "maxPoints": 12999,
+    "color": "#B9F2FF",
+    "effect": "diamond",
+    "image": "thumbnail/levels/diamond-1.png"
+  },
+  {
+    "name": "Diamond II",
+    "tier": "DIAMOND",
+    "division": 2,
+    "minPoints": 13000,
+    "maxPoints": 13999,
+    "color": "#B9F2FF",
+    "effect": "diamond",
+    "image": "thumbnail/levels/diamond-2.png"
+  },
+  {
+    "name": "Diamond III",
+    "tier": "DIAMOND",
+    "division": 3,
+    "minPoints": 14000,
+    "maxPoints": 14999,
+    "color": "#B9F2FF",
+    "effect": "diamond",
+    "image": "thumbnail/levels/diamond-3.png"
+  },
+  {
+    "name": "Wave Master",
+    "tier": "WAVE MASTER",
+    "division": 0,
+    "minPoints": 15000,
+    "maxPoints": null,
+    "color": "#FF4141",
+    "effect": "wave-master-gradient",
+    "image": "thumbnail/levels/wave-master.png"
+  }
+]

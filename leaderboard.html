@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEADERBOARD | WAVE LIST</title>
+    <link rel="icon" type="image/png" href="logo.ico">
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        body { 
+            overflow-y: auto; 
+            background-color: #0b0c10; 
+            margin: 0; 
+            padding-bottom: 50px; 
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        #canvas { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh; 
+            z-index: 0; 
+            pointer-events: none; 
+        }
+
+        .lb-container { 
+            position: relative; 
+            z-index: 1; 
+            width: 92%;
+            max-width: 1350px; 
+            margin: 40px auto; 
+            padding: 0 10px; 
+        }
+
+        .podium-container {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            align-items: flex-end;
+            margin-bottom: 35px;
+        }
+
+        .pod-card {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+            background: rgba(20, 22, 30, 0.85);
+            border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+            border-radius: 12px;
+            padding: 22px 18px;
+            text-align: center;
+            backdrop-filter: blur(12px);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease;
+        }
+
+        .pod-card:hover { transform: translateY(-4px); }
+
+        .pod-card.rank-1 {
+            order: 2;
+            border-color: #ffd700;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.25);
+            padding-top: 28px;
+        }
+
+        .pod-card.rank-2 { order: 1; border-color: #c0c0c0; }
+        .pod-card.rank-3 { order: 3; border-color: #cd7f32; }
+
+        .pod-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.2;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .pod-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .crown-icon {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .pod-name {
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .pod-pts {
+            font-size: 1.35rem;
+            font-weight: 900;
+            color: var(--accent, #ff4141);
+            margin-bottom: 8px;
+        }
+
+        .pod-stats {
+            font-size: 0.8rem;
+            color: #888;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            align-items: center;
+        }
+
+        table { 
+            width: 100%; 
+            border-collapse: separate; 
+            border-spacing: 0 10px; 
+            table-layout: fixed;
+        }
+
+        tr { 
+            background-color: rgba(20, 22, 30, 0.85); 
+            backdrop-filter: blur(10px); 
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            height: 62px;
+            cursor: pointer;
+        }
+
+        tr:hover { 
+            transform: scale(1.005); 
+            filter: brightness(1.15);
+        }
+
+        td { 
+            padding: 0 20px; 
+            height: 62px;
+            vertical-align: middle;
+            border-top: 1px solid var(--border, rgba(255,255,255,0.08)); 
+            border-bottom: 1px solid var(--border, rgba(255,255,255,0.08)); 
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            background: transparent;
+        }
+
+        td:first-child { 
+            border-radius: 8px 0 0 8px; 
+            border-left: 1px solid var(--border, rgba(255,255,255,0.08)); 
+            width: 80px; 
+            padding: 0 10px;
+            text-align: center; 
+            font-weight: 800; 
+            font-size: 1rem;
+            color: #fff;
+        }
+
+        td.col-player { width: 35%; }
+
+        td.col-pts { 
+            width: 25%;
+            text-align: center; 
+            color: var(--accent, #ff4141); 
+            font-weight: 800; 
+            font-size: 1.05rem;
+        }
+
+        td.col-hardest { 
+            border-radius: 0 8px 8px 0; 
+            border-right: 1px solid var(--border, rgba(255,255,255,0.08)); 
+            text-align: right; 
+            font-size: 0.9rem;
+            color: #aaa;
+            padding-right: 24px;
+        }
+
+        .player-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .player-title { 
+            font-weight: 700; 
+            font-size: 1rem; 
+            text-decoration: none; 
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .sub-stat {
+            font-size: 0.75rem;
+            color: #777;
+            margin-top: 2px;
+        }
+
+
+        /* ==========================================
+           TIER TITLE EFFECTS
+           ========================================== */
+
+        .tier-default {
+            color: #ffffff !important;
+        }
+
+        .tier-bronze {
+            color: #cd7f32 !important;
+        }
+
+        .tier-silver {
+            color: #c0c0c0 !important;
+        }
+
+
+        /* GOLD */
+
+        .tier-gold {
+            background: linear-gradient(
+                90deg,
+                #ffd700,
+                #fff2a6,
+                #ffd700,
+                #fff2a6,
+                #ffd700
+            );
+            background-size: 300% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: goldMove 3s linear infinite;
+        }
+
+        @keyframes goldMove {
+            0% {
+                background-position: 0% center;
+            }
+
+            100% {
+                background-position: 300% center;
+            }
+        }
+
+
+        /* PLATINUM */
+
+        .tier-platinum {
+            background: linear-gradient(
+                90deg,
+                #EDF9FF,
+                #ffffff,
+                #bfc1c2,
+                #ffffff,
+                #EDF9FF
+            );
+            background-size: 300% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: platinumMove 3s linear infinite;
+        }
+
+        @keyframes platinumMove {
+            0% {
+                background-position: 0% center;
+            }
+
+            100% {
+                background-position: 300% center;
+            }
+        }
+
+
+        /* DIAMOND */
+
+        .tier-diamond {
+            background: linear-gradient(
+                90deg,
+                #b9f2ff,
+                #ffffff,
+                #00d2ff,
+                #ffffff,
+                #b9f2ff
+            );
+            background-size: 300% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: diamondMove 3s linear infinite;
+        }
+
+        @keyframes diamondMove {
+            0% {
+                background-position: 0% center;
+            }
+
+            100% {
+                background-position: 300% center;
+            }
+        }
+
+
+        /* WAVE MASTER */
+
+        .tier-wave-master {
+            background: linear-gradient(
+                90deg,
+                #ff4141,
+                #9b1cff,
+                #ff4141,
+                #9b1cff,
+                #ff4141
+            );
+            background-size: 300% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: waveMasterMove 2.5s linear infinite;
+        }
+
+        @keyframes waveMasterMove {
+            0% {
+                background-position: 0% center;
+            }
+
+            100% {
+                background-position: 300% center;
+            }
+        }
+
+
+        @media (max-width: 768px) {
+            .lb-container {
+                width: 95%;
+                padding: 0;
+            }
+
+            .podium-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .pod-card {
+                max-width: none;
+            }
+
+            .pod-card.rank-1,
+            .pod-card.rank-2,
+            .pod-card.rank-3 {
+                order: initial;
+            }
+
+            table {
+                table-layout: auto;
+            }
+
+            td {
+                padding: 0 10px;
+            }
+
+            td:first-child {
+                width: 45px;
+            }
+
+            td.col-player {
+                width: auto;
+            }
+
+            td.col-pts {
+                width: 90px;
+            }
+
+            td.col-hardest {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<canvas id="canvas"></canvas>
+
+<nav style="position: relative; z-index: 1;">
+    <div class="nav-logo">LEADERBOARD</div>
+    <a href="index.html" class="nav-link">BACK TO LIST</a>
+</nav>
+
+<div class="lb-container">
+
+    <div class="podium-container" id="podium-data"></div>
+
+    <table>
+        <tbody id="lb-data"></tbody>
+    </table>
+
+</div>
+
+<script>
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    let parts = [];
+
+    function initCanvas() {
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        parts = [];
+
+        for (let i = 0; i < 80; i++) {
+
+            parts.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                s: Math.random() * 2,
+                sp: Math.random() * 0.4 + 0.1
+            });
+
+        }
+
+    }
+
+
+    function anim() {
+
+        ctx.clearRect(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+        parts.forEach(p => {
+
+            ctx.fillStyle =
+                "rgba(255,65,65,0.25)";
+
+            ctx.beginPath();
+
+            ctx.arc(
+                p.x,
+                p.y,
+                p.s,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.fill();
+
+            p.y -= p.sp;
+
+            if (p.y < 0) {
+                p.y = canvas.height;
+            }
+
+        });
+
+        requestAnimationFrame(anim);
+
+    }
+
+
+    window.addEventListener(
+        'resize',
+        initCanvas
+    );
+
+    initCanvas();
+    anim();
+
+
+    // ==========================================
+    // TIER SYSTEM
+    // ==========================================
+
+    let tierData = [];
+
+
+    async function loadTierData() {
+
+        try {
+
+            const response =
+                await fetch(
+                    `player-tiers.json?v=${Date.now()}`,
+                    {
+                        cache: "no-store"
+                    }
+                );
+
+
+            if (!response.ok) {
+                throw new Error(
+                    `Tier data HTTP ${response.status}`
+                );
+            }
+
+
+            tierData =
+                await response.json();
+
+
+            if (!Array.isArray(tierData)) {
+                throw new Error(
+                    "Tier data is not an array"
+                );
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Tier data loading error:",
+                error
+            );
+
+            tierData = [];
+
+        }
+
+    }
+
+
+    function getPlayerTier(points) {
+
+        if (!tierData.length) {
+            return null;
+        }
+
+
+        const totalPoints =
+            Number(points || 0);
+
+
+        /*
+         * Wave Master has no maximum,
+         * so check the minimum point
+         * requirement normally.
+         */
+
+        for (const tier of tierData) {
+
+            const min =
+                Number(
+                    tier.minPoints || 0
+                );
+
+
+            const max =
+                tier.maxPoints === null ||
+                tier.maxPoints === undefined
+                    ? Infinity
+                    : Number(
+                        tier.maxPoints
+                    );
+
+
+            if (
+                totalPoints >= min &&
+                totalPoints <= max
+            ) {
+
+                return tier;
+
+            }
+
+        }
+
+
+        return null;
+
+    }
+
+
+    function getTierClassFromTier(tier) {
+
+        if (!tier) {
+            return 'tier-default';
+        }
+
+
+        const effect =
+            String(
+                tier.effect || ''
+            ).toLowerCase();
+
+
+        if (
+            effect ===
+            'wave-master-gradient'
+        ) {
+
+            return 'tier-wave-master';
+
+        }
+
+
+        if (effect === 'diamond') {
+            return 'tier-diamond';
+        }
+
+
+        if (effect === 'platinum') {
+            return 'tier-platinum';
+        }
+
+
+        if (effect === 'gold') {
+            return 'tier-gold';
+        }
+
+
+        if (effect === 'silver') {
+            return 'tier-silver';
+        }
+
+
+        if (effect === 'bronze') {
+            return 'tier-bronze';
+        }
+
+
+        return 'tier-default';
+
+    }
+
+
+    function getTierClass(points) {
+
+        return getTierClassFromTier(
+            getPlayerTier(points)
+        );
+
+    }
+
+
+    async function load() {
+
+        try {
+
+            /*
+             * Load the tier data separately so
+             * it cannot break the leaderboard.
+             */
+
+            await loadTierData();
+
+
+            const [
+                levelsResponse,
+                packsResponse
+            ] = await Promise.all([
+
+                fetch(
+                    `levels.json?v=${Date.now()}`,
+                    {
+                        cache: "no-store"
+                    }
+                ),
+
+                fetch(
+                    `packs.json?v=${Date.now()}`,
+                    {
+                        cache: "no-store"
+                    }
+                )
+
+            ]);
+
+
+            const data =
+                await levelsResponse.json();
+
+            const packs =
+                await packsResponse.json();
+
+
+            data.sort(
+                (a, b) =>
+                    Number(b.points || 0) -
+                    Number(a.points || 0)
+            );
+
+
+            // ==========================================
+            // PLAYER DATA
+            // ==========================================
+
+            const scores = {};
+            const playerLevels = {};
+            const playerHardest = {};
+            const displayNames = {};
+
+
+            function normalizeName(name) {
+
+                return String(name || '')
+                    .replace(/\./g, '')
+                    .trim()
+                    .toLowerCase();
+
+            }
+
+
+            function registerPlayer(name) {
+
+                const key =
+                    normalizeName(name);
+
+                if (!key) {
+                    return null;
+                }
+
+
+                if (!displayNames[key]) {
+
+                    displayNames[key] =
+                        String(name)
+                            .replace(/\./g, '')
+                            .trim();
+
+                }
+
+
+                if (!playerLevels[key]) {
+
+                    playerLevels[key] =
+                        new Set();
+
+                }
+
+
+                return key;
+
+            }
+
+
+            function addCompletedLevel(
+                playerName,
+                level
+            ) {
+
+                const key =
+                    registerPlayer(playerName);
+
+                if (!key) {
+                    return;
+                }
+
+
+                playerLevels[key].add(
+                    String(level.name)
+                        .toLowerCase()
+                );
+
+
+                const rank =
+                    data.indexOf(level) + 1;
+
+
+                const points =
+                    rank <= 150
+                        ? Number(level.points || 0)
+                        : 0;
+
+
+                scores[key] =
+                    (scores[key] || 0) +
+                    points;
+
+
+                if (
+                    !playerHardest[key] ||
+                    Number(level.points || 0) >
+                    Number(
+                        playerHardest[key].points || 0
+                    )
+                ) {
+
+                    playerHardest[key] =
+                        level;
+
+                }
+
+            }
+
+
+            // ==========================================
+            // PROCESS LEVELS
+            // ==========================================
+
+            data.forEach(level => {
+
+                const completedBy =
+                    new Set();
+
+
+                if (level.verifier) {
+
+                    const verifierKey =
+                        normalizeName(
+                            level.verifier
+                        );
+
+                    if (verifierKey) {
+
+                        completedBy.add(
+                            verifierKey
+                        );
+
+                        registerPlayer(
+                            level.verifier
+                        );
+
+                    }
+
+                }
+
+
+                if (
+                    Array.isArray(
+                        level.victors
+                    )
+                ) {
+
+                    level.victors.forEach(
+                        victor => {
+
+                            const victorKey =
+                                normalizeName(
+                                    victor
+                                );
+
+                            if (!victorKey) {
+                                return;
+                            }
+
+
+                            completedBy.add(
+                                victorKey
+                            );
+
+
+                            registerPlayer(
+                                victor
+                            );
+
+                        }
+                    );
+
+                }
+
+
+                completedBy.forEach(
+                    playerKey => {
+
+                        if (
+                            !playerLevels[playerKey]
+                        ) {
+
+                            playerLevels[playerKey] =
+                                new Set();
+
+                        }
+
+
+                        playerLevels[playerKey].add(
+                            String(level.name)
+                                .toLowerCase()
+                        );
+
+
+                        const rank =
+                            data.indexOf(level) + 1;
+
+
+                        const points =
+                            rank <= 150
+                                ? Number(
+                                    level.points || 0
+                                )
+                                : 0;
+
+
+                        scores[playerKey] =
+                            (
+                                scores[playerKey] ||
+                                0
+                            ) + points;
+
+
+                        if (
+                            !playerHardest[playerKey] ||
+                            Number(level.points || 0) >
+                            Number(
+                                playerHardest[playerKey]
+                                    .points || 0
+                            )
+                        ) {
+
+                            playerHardest[playerKey] =
+                                level;
+
+                        }
+
+                    }
+                );
+
+            });
+
+
+            // ==========================================
+            // PROCESS PACKS
+            // ==========================================
+
+            Object.keys(playerLevels).forEach(
+                playerKey => {
+
+                    const completedLevels =
+                        playerLevels[playerKey];
+
+
+                    packs.forEach(pack => {
+
+                        if (
+                            !Array.isArray(
+                                pack.levels
+                            )
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        const completed =
+                            pack.levels.every(
+                                levelName =>
+                                    completedLevels.has(
+                                        String(
+                                            levelName
+                                        ).toLowerCase()
+                                    )
+                            );
+
+
+                        if (completed) {
+
+                            scores[playerKey] =
+                                (
+                                    scores[playerKey] ||
+                                    0
+                                ) +
+                                Number(
+                                    pack.points || 0
+                                );
+
+                        }
+
+                    });
+
+                }
+            );
+
+
+            // ==========================================
+            // SORT PLAYERS
+            // ==========================================
+
+            const sorted =
+                Object.keys(scores)
+                    .map(key => ({
+
+                        key: key,
+
+                        name:
+                            displayNames[key] ||
+                            key,
+
+                        points:
+                            scores[key]
+
+                    }))
+                    .sort((a, b) => {
+
+                        if (
+                            b.points !==
+                            a.points
+                        ) {
+
+                            return (
+                                b.points -
+                                a.points
+                            );
+
+                        }
+
+                        return a.name.localeCompare(
+                            b.name
+                        );
+
+                    });
+
+
+            // ==========================================
+            // TOP 3
+            // ==========================================
+
+            const podiumContainer =
+                document.getElementById(
+                    'podium-data'
+                );
+
+
+            const top3 =
+                sorted.slice(0, 3);
+
+
+            let podiumHTML = "";
+
+
+            top3.forEach(
+                (player, index) => {
+
+                    const rank =
+                        index + 1;
+
+
+                    const hardest =
+                        playerHardest[
+                            player.key
+                        ];
+
+
+                    const bgThumb =
+                        hardest &&
+                        hardest.thumbnail
+                            ? hardest.thumbnail
+                            : '';
+
+
+                    const hardestName =
+                        hardest
+                            ? hardest.name
+                            : '-';
+
+
+                    const hardestClass =
+                        hardest
+                            ? getTierClass(
+                                hardest.tier
+                            )
+                            : 'tier-default';
+
+
+                    const compCount =
+                        playerLevels[
+                            player.key
+                        ]
+                            ? playerLevels[
+                                player.key
+                            ].size
+                            : 0;
+
+
+                    const playerTier =
+                        getPlayerTier(
+                            player.points
+                        );
+
+
+                    const playerTierClass =
+                        getTierClassFromTier(
+                            playerTier
+                        );
+
+
+                    const crown =
+                        rank === 1
+                            ? '👑'
+                            : rank === 2
+                                ? '🥈'
+                                : '🥉';
+
+
+                    podiumHTML += `
+
+                        <div
+                            class="pod-card rank-${rank}"
+                        >
+
+                            ${
+                                bgThumb
+                                    ? `
+                                        <div
+                                            class="pod-bg"
+                                            style="
+                                                background-image:url('${bgThumb}');
+                                            "
+                                        ></div>
+                                    `
+                                    : ''
+                            }
+
+                            <div
+                                class="pod-content"
+                            >
+
+                                <span
+                                    class="crown-icon"
+                                >
+                                    ${crown}
+                                </span>
+
+
+                                <a
+                                    href="player.html?name=${encodeURIComponent(player.name)}"
+                                    class="pod-name ${playerTierClass}"
+                                >
+                                    ${player.name}
+                                </a>
+
+
+                                <div
+                                    class="pod-pts"
+                                >
+                                    ${player.points.toLocaleString()}
+                                    PTS
+                                </div>
+
+
+                                <div
+                                    class="pod-stats"
+                                >
+
+                                    <span>
+                                        <strong>
+                                            ${compCount}
+                                        </strong>
+                                        completed
+                                    </span>
+
+
+                                    <span>
+                                        Hardest:
+
+                                        <strong
+                                            class="${hardestClass}"
+                                        >
+                                            ${hardestName}
+                                        </strong>
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+                }
+            );
+
+
+            podiumContainer.innerHTML =
+                podiumHTML;
+
+
+            // ==========================================
+            // REMAINING PLAYERS
+            // ==========================================
+
+            const table =
+                document.getElementById(
+                    'lb-data'
+                );
+
+
+            table.innerHTML = "";
+
+
+            const remaining =
+                sorted.slice(3);
+
+
+            remaining.forEach(
+                (player, i) => {
+
+                    const rank =
+                        i + 4;
+
+
+                    const hardest =
+                        playerHardest[
+                            player.key
+                        ];
+
+
+                    const bgThumb =
+                        hardest &&
+                        hardest.thumbnail
+                            ? hardest.thumbnail
+                            : '';
+
+
+                    const hardestName =
+                        hardest
+                            ? hardest.name
+                            : '-';
+
+
+                    const hardestClass =
+                        hardest
+                            ? getTierClass(
+                                hardest.tier
+                            )
+                            : 'tier-default';
+
+
+                    const compCount =
+                        playerLevels[
+                            player.key
+                        ]
+                            ? playerLevels[
+                                player.key
+                            ].size
+                            : 0;
+
+
+                    const playerTier =
+                        getPlayerTier(
+                            player.points
+                        );
+
+
+                    const playerTierClass =
+                        getTierClassFromTier(
+                            playerTier
+                        );
+
+
+                    const profileUrl =
+                        `player.html?name=${encodeURIComponent(player.name)}`;
+
+
+                    const bgStyle =
+                        bgThumb
+                            ? `
+                                background:
+                                linear-gradient(
+                                    90deg,
+                                    rgba(20,22,30,0.92) 0%,
+                                    rgba(20,22,30,0.8) 100%
+                                ),
+                                url('${bgThumb}');
+
+                                background-size:cover;
+                                background-position:center;
+                            `
+                            : '';
+
+
+                    table.innerHTML += `
+
+                        <tr
+                            style="${bgStyle}"
+                            onclick="window.location.href='${profileUrl}'"
+                        >
+
+                            <td>
+                                #${rank}
+                            </td>
+
+
+                            <td
+                                class="col-player"
+                            >
+
+                                <div
+                                    class="player-wrapper"
+                                >
+
+                                    <span
+                                        class="player-title ${playerTierClass}"
+                                    >
+                                        ${player.name}
+                                    </span>
+
+
+                                    <div
+                                        class="sub-stat"
+                                    >
+                                        ${compCount}
+                                        completed
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+                            <td
+                                class="col-pts"
+                            >
+                                ${player.points.toLocaleString()}
+                                PTS
+                            </td>
+
+
+                            <td
+                                class="col-hardest"
+                            >
+
+                                <span
+                                    style="opacity:0.5;"
+                                >
+                                    Hardest:
+                                </span>
+
+
+                                <strong
+                                    class="${hardestClass}"
+                                >
+                                    ${hardestName}
+                                </strong>
+
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                }
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Leaderboard loading error:",
+                error
+            );
+
+
+            document.getElementById(
+                'lb-data'
+            ).innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="4"
+                        style="
+                            text-align:center;
+                            color:#ff4141;
+                            padding:30px;
+                        "
+                    >
+                        ERROR LOADING
+                        LEADERBOARD DATA
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+
+    }
+
+
+    load();
+
+</script>
+
+</body>
+</html>

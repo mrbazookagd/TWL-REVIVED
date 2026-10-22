@@ -1,0 +1,8 @@
+[
+  { "name": "Bronze", "minPoints": 0, "maxPoints": 49, "color": "#cd7f32", "image": "Thumbnail/logos/bronze.png", "size": "130%" },
+  { "name": "Silver", "minPoints": 50, "maxPoints": 99, "color": "#bebebe", "image": "Thumbnail/logos/silver.png", "size": "100%" },
+  { "name": "Gold", "minPoints": 100, "maxPoints": 199, "color": "#ffcf4b", "image": "Thumbnail/logos/gold.png", "size": "100%" },
+  { "name": "Platinum", "minPoints": 200, "maxPoints": 299, "color": "#50bfe6", "image": "Thumbnail/logos/platinum.png", "size": "130%" },
+  { "name": "Diamond", "minPoints": 300, "maxPoints": 449, "color": "#47e5bc", "image": "Thumbnail/logos/diamond.png", "size": "120%" },
+  { "name": "Ruby", "minPoints": 450, "maxPoints": 9999, "color": "#E0115F", "image": "Thumbnail/logos/ruby.png", "size": "120%" }
+]

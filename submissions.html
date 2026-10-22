@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>THE WAVE LIST - SUBMITTED RECORDS</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .sub-layout {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .sub-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 25px;
+        }
+        .sub-card {
+            background: rgba(20, 22, 30, 0.8);
+            border: 1px solid var(--border, rgba(255,255,255,0.05));
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(10px);
+        }
+        .sub-thumb {
+            width: 100%;
+            height: 190px;
+            object-fit: cover;
+            background: #050608;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .sub-content {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .sub-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0;
+            color: #fff;
+        }
+        .sub-meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+        }
+        .meta-item span {
+            color: #666;
+            display: block;
+            text-transform: uppercase;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+        .meta-item p {
+            margin: 0;
+            font-weight: 600;
+            color: #ddd;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .notes-box {
+            font-size: 0.8rem;
+            color: #aaa;
+            background: rgba(255,255,255,0.02);
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 3px solid #444;
+            margin-top: 5px;
+        }
+        .action-link {
+            display: block;
+            text-align: center;
+            background: #fff;
+            color: #000;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            text-decoration: none;
+            margin-top: auto;
+            transition: opacity 0.2s;
+        }
+        .action-link:hover {
+            opacity: 0.9;
+        }
+        #loading {
+            text-align: center;
+            color: #666;
+            font-size: 1.2rem;
+            padding: 40px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-logo" onclick="window.location.href='index.html'" style="cursor:pointer;">THE WAVE LIST</div>
+        <div>
+            <a href="index.html" class="nav-link" style="margin-right: 20px;">BACK TO LIST</a>
+            <a href="submit.html" class="nav-link">SUBMIT RECORD</a>
+        </div>
+    </nav>
+
+    <div class="sub-layout">
+        <div class="page-header">
+            <h1 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 5px;">SUBMITTED RECORDS</h1>
+            <p style="color: #666; text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem;">Pending evaluation cue</p>
+        </div>
+
+        <div id="loading">Loading current submissions...</div>
+        <div class="sub-grid" id="submissionsGrid"></div>
+    </div>
+
+    <script>
+        const GITHUB_USER = "jokewreb";
+        const GITHUB_REPO = "TWL";
+
+        async function fetchSubmissions() {
+            const grid = document.getElementById('submissionsGrid');
+            const loading = document.getElementById('loading');
+            
+            try {
+                const response = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/issues?state=open&per_page=100`);
+                const issues = await response.json();
+                
+                if (!Array.isArray(issues)) {
+                    throw new Error("Repository data response error.");
+                }
+
+                const filteredIssues = issues.filter(issue => issue.title && issue.title.startsWith('[SUBMISSION]'));
+                
+                loading.style.display = 'none';
+                if (filteredIssues.length === 0) {
+                    grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:#444; padding:40px;">No pending submissions found.</div>`;
+                    return;
+                }
+
+                grid.innerHTML = "";
+
+                filteredIssues.forEach(issue => {
+                    const data = {};
+                    if (issue.body) {
+                        const lines = issue.body.split('\n');
+                        lines.forEach(line => {
+                            const parts = line.split(': ');
+                            if (parts.length >= 2) {
+                                const key = parts[0].trim();
+                                const val = parts.slice(1).join(': ').trim();
+                                data[key] = val;
+                            }
+                        });
+                    }
+
+                    const card = document.createElement('div');
+                    card.className = 'sub-card';
+                    
+                    let thumbUrl = data["IMAGE OF THUMBNAIL"] || "";
+                    if (thumbUrl.includes('](')) {
+                        thumbUrl = thumbUrl.split('](')[1].split(')')[0];
+                    } else if (thumbUrl.includes('src=')) {
+                        thumbUrl = thumbUrl.split('src="')[1].split('"')[0];
+                    }
+                    
+                    if (!thumbUrl || thumbUrl.startsWith('[Drop')) {
+                        thumbUrl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+                    }
+
+                    card.innerHTML = `
+                        <img src="${thumbUrl}" class="sub-thumb" onerror="this.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='">
+                        <div class="sub-content">
+                            <h3 class="sub-title">${data["NAME"] || "Unknown Level"}</h3>
+                            <div style="font-size:0.85rem; color: var(--accent, #47e5bc); font-weight:700;">Submitted by ${data["PLAYER"] || "Unknown"}</div>
+                            
+                            <div class="sub-meta-grid">
+                                <div class="meta-item"><span>ID</span><p>${data["ID"] || "-"}</p></div>
+                                <div class="meta-item"><span>Difficulty</span><p>${data["DIFFICULTY"] || "-"}</p></div>
+                                <div class="meta-item"><span>Creator</span><p>${data["CREATOR"] || "-"}</p></div>
+                                <div class="meta-item"><span>Verifier</span><p>${data["VERIFIER"] || "-"}</p></div>
+                            </div>
+                            
+                            <div class="notes-box">
+                                <span style="font-size:0.65rem; font-weight:700; display:block; text-transform:uppercase; color:#666; margin-bottom:2px;">Extra Notes</span>
+                                ${data["EXTRA NOTES"] || "None"}
+                            </div>
+                            
+                            <a href="${data["YOUTUBE VIDEO"] || '#'}" target="_blank" class="action-link">Watch Proof Video</a>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+
+            } catch (error) {
+                console.error(error);
+                loading.innerText = "Error pulling raw database records from GitHub API. Ensure your repository issues tracker features are turned on!";
+            }
+        }
+
+        fetchSubmissions();
+    </script>
+</body>
+</html>
