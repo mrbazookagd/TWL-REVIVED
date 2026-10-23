@@ -1,2 +1,0 @@
-# TWL-REVIVED
-The Wave List REVIVED
