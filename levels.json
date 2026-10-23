@@ -1,1 +1,12 @@
-
+[
+  { 
+    "name": "Flowering Waves", 
+    "points": 20, 
+    "creator": "supergator123", 
+    "verifier": "supergator123", 
+    "id": "150991701", 
+    "video": "urxF_Njm8Xo",
+    "thumbnail": "Thumbnail/floweringwaves.jpg", 
+    "victors": ["seveh","MrBazooka"] 
+  }
+]
