@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>THE WAVE LIST - RULES</title>
+    <link rel="icon" type="image/png" href="logo.ico">
+</head>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Force vertical scrolling specifically for this page if style.css disables it */
+        html, body {
+            overflow-y: auto !important;
+            height: auto !important;
+        }
+
+        .rules-container {
+            max-width: 1000px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+        .rules-card {
+            background: rgba(20, 22, 30, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            margin-bottom: 80px; /* Gives some breathing room at the bottom of the page */
+        }
+        .rules-section {
+            margin-bottom: 35px;
+        }
+        .rules-section:last-child {
+            margin-bottom: 0;
+        }
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--accent, #47e5bc);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .rules-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .rules-list li {
+            font-size: 0.95rem;
+            color: #ccc;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            position: relative;
+            padding-left: 20px;
+        }
+        .rules-list li::before {
+            content: "•";
+            color: var(--accent, #47e5bc);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-logo" onclick="window.location.href='index.html'" style="cursor:pointer;">THE WAVE LIST</div>
+        <div>
+            <a href="index.html" class="nav-link" style="margin-right: 20px;">BACK TO LIST</a>
+            <a href="submit.html" class="nav-link" style="margin-right: 20px;">SUBMIT</a>
+            <a href="roulette.html" class="nav-link" style="margin-right: 20px;">ROULETTE</a>
+            <a href="leaderboard.html" class="nav-link">LEADERBOARD</a>
+        </div>
+    </nav>
+
+    <div class="rules-container">
+        <h1 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 5px; text-transform: uppercase; text-align: center;">List Guidelines & Rules</h1>
+        <p style="color: #666; text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem; text-align: center; margin-bottom: 40px;">Please read carefully before submitting records or levels</p>
+
+        <div class="rules-card">
+            <div class="rules-section">
+                <div class="section-title">Record Requirements</div>
+                <ul class="rules-list">
+                    <li>All completions must be achieved legitimately without the use of Option Triggers, macro's, Noclip, Or any illegal Cheats.</li>
+                    <li>Clicks or taps must be clearly audible in the video submission. Music-only videos without raw audio may be rejected.</li>
+                    <li>The video must show the full run from 0% to 100%, including the level selection screen or end screen if applicable.</li>
+                    <li>Cheat indicator status has to be visible.</li>
+                </ul>
+            </div>
+
+            <div class="rules-section">
+                <div class="section-title">Level Requirements</div>
+                <ul class="rules-list">
+                    <li>Levels submitted to the list must be primary wave-focused or completely wave layout gameplay.</li>
+                    <li>Secret ways, unpassable bugs, or invisible teleport triggers that bypass gameplay are strictly prohibited.</li>
+                    <li>The Level has to be over 10 Seconds and under 1 Hour</li>
+                </ul>
+            </div>
+
+            <div class="rules-section">
+                <div class="section-title">Community & Form Etiquette</div>
+                <ul class="rules-list">
+                    <li>Do not spam the submission forms with identical or troll requests. Repeating failed submissions can lead to a leaderboard ban.</li>
+                    <li>Ensure you input accurate level IDs, player names, and original video links when submitting data.</li>
+                    <li>Be respectful to list moderators when evaluating tier updates, point adjustments, or open verification tracking updates.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <a href="index.html" style="position: fixed; bottom: 25px; right: 90px; width: 56px; height: 56px; background: rgba(30, 34, 45, 0.9); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 9999; transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;" onmouseover="this.style.transform='scale(1.1)'; this.style.borderColor='var(--accent, #47e5bc)'; this.style.backgroundColor='rgba(40, 45, 60, 0.9)';" onmouseout="this.style.transform='scale(1)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.backgroundColor='rgba(30, 34, 45, 0.9)';">
+        <span style="font-size: 1.3rem; user-select: none;">🏠</span>
+    </a>
+
+    <a href="https://discord.com/invite/7SjKU8vy8x" target="_blank" style="position: fixed; bottom: 25px; right: 25px; width: 56px; height: 56px; background: #5865F2; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 9999; transition: transform 0.2s ease, background-color 0.2s ease;" onmouseover="this.style.transform='scale(1.1)'; this.style.backgroundColor='#4752C4';" onmouseout="this.style.transform='scale(1)'; this.style.backgroundColor='#5865F2';">
+        <img src="discord.png" alt="Discord" style="width: 28px; height: 28px; object-fit: contain;" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\' fill=\'%23ffffff\'><path d=\'M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.094 13.094 0 0 1-1.873-.894.077.077 0 0 1-.008-.128c.126-.093.252-.19.372-.287a.075.075 0 0 1 .077-.011c3.92 1.793 8.18 1.793 12.061 0a.073.073 0 0 1 .078.009c.12.099.246.195.373.289a.077.077 0 0 1-.006.127 12.298 12.298 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.156-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.156 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.156-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.156 2.418z\'/></svg>';">
+    </a>
+</body>
+</html>

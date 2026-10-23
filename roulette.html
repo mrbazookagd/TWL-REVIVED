@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE WAVE LIST - ROULETTE</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            background-color: #0b0c10;
+            font-family: system-ui, -apple-system, sans-serif;
+            color: #fff;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        #canvas { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh; 
+            z-index: 0; 
+            pointer-events: none; 
+        }
+
+        nav {
+            position: relative;
+            z-index: 2;
+            padding: 18px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-wrapper {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 10px 40px 40px 40px;
+            width: 100%;
+        }
+
+        .roulette-container {
+            width: 100%;
+            max-width: 1600px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        #game-header {
+            width: 100%;
+        }
+
+        .header-top-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 10px;
+        }
+
+        .progress-banner {
+            font-size: 4.2rem;
+            font-weight: 900;
+            color: var(--accent, #ff4141);
+            text-shadow: 0 0 35px rgba(255, 65, 65, 0.45);
+            margin: 0;
+            line-height: 1;
+            letter-spacing: -1.5px;
+        }
+
+        .target-sub {
+            font-size: 1.15rem;
+            color: #ddd;
+            text-transform: uppercase;
+            letter-spacing: 2.5px;
+            font-weight: 800;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 10px 26px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 5%;
+            background: linear-gradient(90deg, #ff4141, #ff7171);
+            border-radius: 12px;
+            transition: width 0.4s ease;
+            box-shadow: 0 0 20px rgba(255, 65, 65, 0.8);
+        }
+
+        .roulette-card {
+            position: relative;
+            width: 100%;
+            background: rgba(20, 22, 30, 0.90);
+            border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+            border-radius: 24px;
+            padding: 45px 55px;
+            box-shadow: 0 35px 90px rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(18px);
+            overflow: hidden;
+        }
+
+        .card-bg-blur {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.16;
+            filter: blur(35px);
+            z-index: 0;
+            pointer-events: none;
+            transition: background-image 0.4s ease;
+        }
+
+        .card-grid {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 1.35fr 1fr;
+            gap: 55px;
+            align-items: center;
+        }
+
+        .media-col {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            min-width: 0;
+        }
+
+        .roulette-thumb {
+            width: 100%;
+            height: 450px;
+            object-fit: cover;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+        }
+
+        .info-col {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            min-width: 0;
+        }
+
+        .level-rank-tag {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--accent, #ff4141);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .level-name {
+            font-size: 3.8rem;
+            font-weight: 900;
+            color: #fff;
+            margin: 0;
+            line-height: 1.05;
+            letter-spacing: -1.5px;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+            word-break: break-word;
+        }
+
+        .badge-row {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .tier-badge {
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1.5px solid currentColor;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .points-badge {
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #ffd700;
+            background: rgba(255, 215, 0, 0.12);
+            border: 1.5px solid rgba(255, 215, 0, 0.4);
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px 30px;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.35);
+            padding: 28px;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .detail-label {
+            font-size: 0.85rem;
+            color: #888;
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .detail-value {
+            font-size: 1.3rem;
+            color: #fff;
+            font-weight: 700;
+            margin-top: 4px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 18px;
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        .roulette-btn {
+            flex: 1;
+            background: var(--accent, #ff4141);
+            color: #fff;
+            border: none;
+            padding: 20px 32px;
+            font-size: 1.15rem;
+            font-weight: 800;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 8px 25px rgba(255, 65, 65, 0.35);
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .roulette-btn:hover {
+            transform: translateY(-3px);
+            filter: brightness(1.15);
+            box-shadow: 0 12px 30px rgba(255, 65, 65, 0.5);
+        }
+
+        .roulette-btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            flex: 0.45;
+            background: rgba(255, 255, 255, 0.08) !important;
+            color: #ccc !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            box-shadow: none !important;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15) !important;
+            color: #fff !important;
+        }
+
+        .btn-video {
+            background: rgba(255, 0, 0, 0.2) !important;
+            color: #ff6b6b !important;
+            border: 1px solid rgba(255, 0, 0, 0.35) !important;
+            box-shadow: none !important;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 16px;
+            font-size: 1rem;
+        }
+
+        .win-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 24px;
+            animation: fadeIn 0.5s ease forwards;
+            padding: 50px 0;
+            width: 100%;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Smaller screens: keep original design, just make it fit and scroll */
+        @media (max-width: 1100px) {
+            .page-wrapper {
+                padding: 10px 25px 30px;
+            }
+
+            .roulette-card {
+                padding: 35px;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+                gap: 35px;
+            }
+
+            .roulette-thumb {
+                height: auto;
+                aspect-ratio: 16 / 9;
+                max-height: none;
+            }
+        }
+
+        @media (max-width: 600px) {
+            nav {
+                padding: 14px 12px;
+            }
+
+            nav > div:last-child {
+                display: flex;
+                gap: 2px;
+            }
+
+            .nav-link {
+                font-size: 0.7rem;
+                padding: 6px 6px;
+            }
+
+            .page-wrapper {
+                flex: none;
+                padding: 8px 8px 30px;
+                width: 100%;
+            }
+
+            .roulette-container {
+                width: 100%;
+                gap: 14px;
+            }
+
+            .header-top-line {
+                align-items: center;
+                gap: 8px;
+            }
+
+            .progress-banner {
+                font-size: 2.5rem;
+                letter-spacing: -1px;
+            }
+
+            .target-sub {
+                font-size: 0.68rem;
+                letter-spacing: 1px;
+                padding: 8px 10px;
+            }
+
+            .progress-bar-bg {
+                height: 10px;
+            }
+
+            .roulette-card {
+                padding: 16px;
+                border-radius: 18px;
+            }
+
+            .card-grid {
+                gap: 20px;
+            }
+
+            .roulette-thumb {
+                width: 100%;
+                height: auto;
+                aspect-ratio: 16 / 9;
+                object-fit: cover;
+                border-radius: 14px;
+            }
+
+            .info-col {
+                gap: 18px;
+            }
+
+            .level-rank-tag {
+                font-size: 0.9rem;
+                letter-spacing: 1.5px;
+            }
+
+            .level-name {
+                font-size: 2.3rem;
+                letter-spacing: -1px;
+            }
+
+            .tier-badge,
+            .points-badge {
+                padding: 8px 15px;
+                font-size: 0.75rem;
+            }
+
+            .details-grid {
+                gap: 14px 16px;
+                padding: 16px;
+            }
+
+            .detail-label {
+                font-size: 0.68rem;
+            }
+
+            .detail-value {
+                font-size: 0.95rem;
+            }
+
+            .btn-group {
+                gap: 9px;
+            }
+
+            .roulette-btn {
+                padding: 15px 10px;
+                font-size: 0.82rem;
+            }
+
+            .btn-video {
+                padding: 13px;
+                font-size: 0.82rem;
+            }
+
+            .win-screen {
+                padding: 30px 0;
+            }
+        }
+
+        @media (max-width: 400px) {
+            nav {
+                padding: 12px 7px;
+            }
+
+            nav .nav-logo {
+                font-size: 0.75rem;
+            }
+
+            .nav-link {
+                font-size: 0.58rem;
+                padding: 5px 4px;
+            }
+
+            .page-wrapper {
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+
+            .progress-banner {
+                font-size: 2rem;
+            }
+
+            .target-sub {
+                font-size: 0.58rem;
+                padding: 7px 8px;
+            }
+
+            .roulette-card {
+                padding: 12px;
+            }
+
+            .level-name {
+                font-size: 1.9rem;
+            }
+
+            .details-grid {
+                padding: 13px;
+                gap: 12px;
+            }
+
+            .detail-value {
+                font-size: 0.85rem;
+            }
+
+            .roulette-btn {
+                padding: 13px 8px;
+                font-size: 0.72rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+
+    <nav>
+        <div class="nav-logo" onclick="window.location.href='index.html'" style="cursor:pointer;">THE WAVE LIST</div>
+        <div>
+            <a href="index.html" class="nav-link">BACK TO LIST</a>
+            <a href="leaderboard.html" class="nav-link">LEADERBOARD</a>
+        </div>
+    </nav>
+
+    <div class="page-wrapper">
+        <div class="roulette-container">
+            
+            <div id="game-header">
+                <div class="header-top-line">
+                    <div class="progress-banner" id="target-percentage">Get 5%</div>
+                    <div class="target-sub" id="level-counter">Level 1 of 20</div>
+                </div>
+
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="progress-fill"></div>
+                </div>
+            </div>
+
+            <div class="roulette-card" id="roulette-card">
+                <div class="card-bg-blur" id="card-bg-blur"></div>
+
+                <div id="game-content" class="card-grid">
+                    <div class="media-col">
+                        <img id="r-thumb" src="" class="roulette-thumb">
+
+                        <a id="r-video-btn" href="#" target="_blank" class="roulette-btn btn-video" style="display:none;">
+                            ▶ Watch Level Showcase
+                        </a>
+                    </div>
+
+                    <div class="info-col">
+                        <div>
+                            <span id="r-rank" class="level-rank-tag">List Rank #--</span>
+                            <h2 id="r-name" class="level-name">---</h2>
+                        </div>
+
+                        <div class="badge-row">
+                            <div id="r-tier" class="tier-badge">-</div>
+                            <div id="r-points" class="points-badge">0 PTS</div>
+                        </div>
+
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <span class="detail-label">Creator</span>
+                                <span id="r-creator" class="detail-value">-</span>
+                            </div>
+
+                            <div class="detail-item">
+                                <span class="detail-label">Verifier</span>
+                                <span id="r-verifier" class="detail-value">-</span>
+                            </div>
+
+                            <div class="detail-item">
+                                <span class="detail-label">Level ID</span>
+                                <span id="r-id" class="detail-value">-</span>
+                            </div>
+
+                            <div class="detail-item">
+                                <span class="detail-label">Victors Count</span>
+                                <span id="r-victors" class="detail-value">0</span>
+                            </div>
+                        </div>
+                        
+                        <div class="btn-group">
+                            <button class="roulette-btn" id="action-btn" onclick="advanceRoulette()">I Beat It! Next Level</button>
+                            <button class="roulette-btn btn-secondary" id="skip-btn" onclick="skipLevel()">Skip</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="win-content" class="win-screen">
+                    <div style="font-size: 6.5rem; filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.5));">👑</div>
+
+                    <h2 class="level-name" style="color: var(--accent, #ff4141); font-size: 4rem;">
+                        ROULETTE COMPLETED!
+                    </h2>
+
+                    <p style="color: #aaa; max-width: 600px; margin: 0 auto; line-height: 1.7; font-size: 1.2rem;">
+                        Incredible performance! You completed all 20 random challenges from 5% all the way up to a 100% completion!
+                    </p>
+
+                    <button class="roulette-btn" style="max-width:300px; margin-top: 15px;" onclick="resetGame()">
+                        Play Again
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let parts = [];
+
+        function initCanvas() {
+            canvas.width = window.innerWidth; 
+            canvas.height = window.innerHeight;
+            parts = []; 
+
+            for(let i = 0; i < 90; i++) {
+                parts.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    s: Math.random() * 2.2,
+                    sp: Math.random() * 0.4 + 0.1
+                });
+            }
+        }
+
+        function anim() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            parts.forEach(p => { 
+                ctx.fillStyle = "rgba(255, 65, 65, 0.25)"; 
+                ctx.beginPath(); 
+                ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2); 
+                ctx.fill(); 
+
+                p.y -= p.sp; 
+
+                if(p.y < 0) {
+                    p.y = canvas.height;
+                }
+            });
+
+            requestAnimationFrame(anim);
+        }
+
+        window.onresize = initCanvas; 
+        initCanvas(); 
+        anim();
+
+        let allLevels = [];
+        let allTiers = [];
+        let usedLevelIds = new Set();
+        let currentStep = 1;
+        
+        const targets = [
+            5, 10, 15, 20, 25,
+            30, 35, 40, 45, 50,
+            55, 60, 65, 70, 75,
+            80, 85, 90, 95, 100
+        ];
+
+        async function initGame() {
+            try {
+                const resTiers = await fetch(`tiers.json?v=${new Date().getTime()}`);
+                allTiers = await resTiers.json();
+
+                const resLevels = await fetch(`levels.json?v=${new Date().getTime()}`);
+                allLevels = await resLevels.json();
+
+                /*
+                 * Match the ranking order used by the main list.
+                 */
+                allLevels.sort((a, b) =>
+                    Number(b.points || 0) - Number(a.points || 0)
+                );
+
+                if (allLevels.length < 20) {
+                    alert("Warning: You need at least 20 levels in your levels.json file to play the roulette!");
+                }
+
+                resetGame();
+            } catch (e) {
+                console.error("Error launching game data:", e);
+                document.getElementById('r-name').innerText = "Failed loading game data.";
+            }
+        }
+
+        function resetGame() {
+            usedLevelIds.clear();
+            currentStep = 1;
+            
+            document.getElementById('game-header').style.display = 'block';
+            document.getElementById('game-content').style.display = 'grid';
+            document.getElementById('win-content').style.display = 'none';
+
+            getNewRandomLevel();
+        }
+
+        function getNewRandomLevel() {
+            const availableLevels =
+                allLevels.filter(lvl => !usedLevelIds.has(lvl.id));
+
+            const sourcePool =
+                availableLevels.length > 0
+                    ? availableLevels
+                    : allLevels;
+
+            const randomLevel =
+                sourcePool[Math.floor(Math.random() * sourcePool.length)];
+            
+            usedLevelIds.add(randomLevel.id);
+
+            /*
+             * allLevels is sorted by points, so this is the
+             * correct position in THE WAVE LIST.
+             */
+            const listRank =
+                allLevels.indexOf(randomLevel) + 1;
+
+            const targetPercent =
+                targets[currentStep - 1];
+
+            document.getElementById('target-percentage').innerText =
+                `Get ${targetPercent}%`;
+
+            document.getElementById('level-counter').innerText =
+                `Level ${currentStep} of 20`;
+            
+            const fillPercent =
+                (currentStep / 20) * 100;
+
+            document.getElementById('progress-fill').style.width =
+                `${fillPercent}%`;
+
+            document.getElementById('r-rank').innerText =
+                listRank > 0
+                    ? `List Rank #${listRank}`
+                    : 'Unranked';
+
+            document.getElementById('r-name').innerText =
+                randomLevel.name || 'Unknown Level';
+
+            document.getElementById('r-creator').innerText =
+                randomLevel.creator || 'Unknown';
+
+            document.getElementById('r-verifier').innerText =
+                randomLevel.verifier || 'None';
+
+            document.getElementById('r-id').innerText =
+                randomLevel.id || '-';
+
+            document.getElementById('r-points').innerText =
+                `${randomLevel.points || 0} PTS`;
+            
+            const victorsArray =
+                Array.isArray(randomLevel.victors)
+                    ? randomLevel.victors
+                    : [];
+
+            document.getElementById('r-victors').innerText =
+                `${victorsArray.length} Victor${victorsArray.length === 1 ? '' : 's'}`;
+
+            const videoBtn =
+                document.getElementById('r-video-btn');
+
+            const videoUrl =
+                randomLevel.video ||
+                randomLevel.verification ||
+                randomLevel.yt;
+
+            if (videoUrl) {
+                videoBtn.href = videoUrl;
+                videoBtn.style.display = 'inline-flex';
+            } else {
+                videoBtn.style.display = 'none';
+            }
+
+            const imgSource =
+                randomLevel.thumbnail
+                    ? randomLevel.thumbnail
+                    : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+
+            document.getElementById('r-thumb').src =
+                imgSource;
+
+            document.getElementById('card-bg-blur').style.backgroundImage =
+                `url('${imgSource}')`;
+
+            const currentTier =
+                allTiers.find(t =>
+                    Number(randomLevel.points || 0) >= Number(t.minPoints || 0) &&
+                    Number(randomLevel.points || 0) <= Number(t.maxPoints || Infinity)
+                );
+
+            const tierBadge =
+                document.getElementById('r-tier');
+            
+            if (currentTier) {
+                tierBadge.innerText =
+                    currentTier.name;
+
+                tierBadge.style.color =
+                    currentTier.color;
+
+                tierBadge.style.borderColor =
+                    currentTier.color;
+
+                tierBadge.style.display =
+                    'inline-block';
+            } else {
+                tierBadge.style.display =
+                    'none';
+            }
+        }
+
+        function advanceRoulette() {
+            if (currentStep >= 20) {
+                document.getElementById('game-header').style.display = 'none';
+                document.getElementById('game-content').style.display = 'none';
+                document.getElementById('win-content').style.display = 'flex';
+            } else {
+                currentStep++;
+                getNewRandomLevel();
+            }
+        }
+
+        function skipLevel() {
+            getNewRandomLevel();
+        }
+
+        initGame();
+    </script>
+</body>
+</html>

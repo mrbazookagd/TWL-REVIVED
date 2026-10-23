@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SUBMIT NEW LEVEL</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .submit-container { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 700px; margin: 40px auto; padding: 0 20px; }
+        .submit-card { width: 100%; background: rgba(20, 22, 30, 0.8); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 40px; box-shadow: 0 40px 80px rgba(0,0,0,0.7); backdrop-filter: blur(10px); }
+        .form-title { font-size: 2rem; font-weight: 800; margin-bottom: 5px; text-align: center; }
+        .form-sub { font-size: 0.95rem; color: #888; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 2px; text-align: center; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; width: 100%; text-align: left; }
+        .form-group.full-width { grid-column: span 2; }
+        .form-group label { font-size: 0.85rem; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+        .form-group input, .form-group textarea { width: 100%; background: rgba(10, 11, 15, 0.8); border: 1px solid rgba(255,255,255,0.1); padding: 14px; border-radius: 8px; color: #fff; font-size: 1rem; outline: none; font-family: inherit; }
+        .form-group input:focus, .form-group textarea:focus { border-color: var(--accent, #47e5bc); }
+        .submit-btn { width: 100%; background: #fff; color: #000; border: none; padding: 16px; font-size: 1rem; font-weight: 700; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+        @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } .form-group.full-width { grid-column: span 1; } }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-logo" onclick="window.location.href='index.html'" style="cursor:pointer;">THE WAVE LIST</div>
+        <div>
+            <a href="submit.html" class="nav-link">BACK TO CHOICES</a>
+        </div>
+    </nav>
+
+    <div class="submit-container">
+        <h2 class="form-title">SUBMIT A NEW LEVEL</h2>
+        <div class="form-sub">Send raw level data to pending queue</div>
+        <div class="submit-card">
+            <form onsubmit="handleSubmit(event)">
+                <div class="form-grid">
+                    <div class="form-group"><label>Player Name</label><input type="text" id="playerName" required></div>
+                    <div class="form-group"><label>Name</label><input type="text" id="levelName" required></div>
+                    <div class="form-group"><label>ID</label><input type="text" id="levelId" required></div>
+                    <div class="form-group"><label>Creator</label><input type="text" id="levelCreator" required></div>
+                    <div class="form-group"><label>Verifier</label><input type="text" id="levelVerifier" required></div>
+                    <div class="form-group"><label>Difficulty</label><input type="text" id="levelDifficulty" required></div>
+                    <div class="form-group full-width"><label>YouTube Video / Proof Link</label><input type="url" id="videoLink" required></div>
+                    <div class="form-group full-width">
+                        <label style="color: var(--accent, #47e5bc);">Image of Thumbnail (Upload on next step)</label>
+                        <div style="font-size: 0.85rem; color: #888; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; border: 1px dashed #444;">
+                            Drag & Drop or Paste your thumbnail inside the GitHub text box on the next screen!
+                        </div>
+                    </div>
+                    <div class="form-group full-width"><label>Extra Notes</label><textarea id="extraNotes"></textarea></div>
+                </div>
+                <button type="submit" class="submit-btn">Create Level Submission</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const GITHUB_USER = "jokewreb";
+        const GITHUB_REPO = "TWL";
+
+        function handleSubmit(event) {
+            event.preventDefault();
+            const title = encodeURIComponent(`[SUBMISSION] ${document.getElementById('levelName').value} by ${document.getElementById('playerName').value}`);
+            const body = encodeURIComponent(
+`PLAYER: ${document.getElementById('playerName').value}
+NAME: ${document.getElementById('levelName').value}
+ID: ${document.getElementById('levelId').value}
+CREATOR: ${document.getElementById('levelCreator').value}
+VERIFIER: ${document.getElementById('levelVerifier').value}
+DIFFICULTY: ${document.getElementById('levelDifficulty').value}
+YOUTUBE VIDEO: ${document.getElementById('videoLink').value}
+IMAGE OF THUMBNAIL: [Drop your image right here!]
+EXTRA NOTES: ${document.getElementById('extraNotes').value || "None"}`
+            );
+            window.open(`https://github.com/${GITHUB_USER}/${GITHUB_REPO}/issues/new?title=${title}&body=${body}`, '_blank');
+        }
+    </script>
+</body>
+</html>

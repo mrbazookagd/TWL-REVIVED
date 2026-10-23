@@ -1,0 +1,1742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE WAVE LIST - PLAYER PROFILE</title>
+<link rel="icon" type="image/png" href="logo.ico">
+
+<style>
+:root{
+    --accent:#47e5bc;
+    --gold:#ffcf4b;
+    --bg-dark:#0b0c10;
+    --card-bg:rgba(18,22,31,.88);
+    --border:rgba(255,255,255,.1);
+}
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    scrollbar-width:thin;
+    scrollbar-color:rgba(255,255,255,.15) #0b0c10;
+}
+
+html,body{
+    width:100%;
+    min-height:100vh;
+    background:#0b0c10;
+    font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    color:#fff;
+    overflow-x:hidden;
+    overflow-y:auto;
+}
+
+#bg-canvas{
+    position:fixed;
+    inset:0;
+    width:100vw;
+    height:100vh;
+    z-index:0;
+    pointer-events:none;
+}
+
+nav{
+    position:relative;
+    z-index:100;
+    padding:14px 32px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:rgba(11,12,16,.95);
+    backdrop-filter:blur(16px);
+    border-bottom:1px solid var(--border);
+    width:100%;
+    height:64px;
+}
+
+.nav-logo{
+    font-size:1.35rem;
+    font-weight:900;
+    letter-spacing:2px;
+    color:#fff;
+    text-transform:uppercase;
+    cursor:pointer;
+}
+
+.nav-logo:hover{
+    color:var(--accent);
+}
+
+.nav-link{
+    color:#aaa;
+    text-decoration:none;
+    font-weight:700;
+    font-size:.85rem;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    padding:6px 12px;
+    border-radius:6px;
+}
+
+.nav-link:hover{
+    color:#fff;
+    background:rgba(255,255,255,.05);
+}
+
+.profile-container{
+    position:relative;
+    z-index:1;
+    max-width:1300px;
+    margin:40px auto;
+    padding:0 24px;
+}
+
+.profile-header{
+    position:relative;
+    text-align:center;
+    margin-bottom:50px;
+    background:var(--card-bg);
+    padding:40px;
+    border-radius:20px;
+    border:1px solid var(--border);
+    backdrop-filter:blur(20px);
+    box-shadow:0 20px 45px rgba(0,0,0,.6);
+    overflow:hidden;
+}
+
+.profile-bg-layer{
+    position:absolute;
+    inset:0;
+    background-size:cover;
+    background-position:center;
+    opacity:.35;
+    filter:blur(6px);
+    transform:scale(1.06);
+    z-index:0;
+    pointer-events:none;
+    background-color:#151922;
+}
+
+.profile-bg-overlay{
+    position:absolute;
+    inset:0;
+    background:radial-gradient(
+        circle at center,
+        rgba(11,12,16,.45) 0%,
+        rgba(11,12,16,.9) 100%
+    );
+    z-index:0;
+    pointer-events:none;
+}
+
+.profile-header-content{
+    position:relative;
+    z-index:1;
+}
+
+.player-main-row{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:28px;
+    margin-bottom:22px;
+}
+
+.profile-name{
+    font-size:3rem;
+    font-weight:900;
+    margin:0;
+    color:#fff;
+    text-transform:uppercase;
+    letter-spacing:-.5px;
+    transition:all .3s ease;
+}
+
+/* ================================
+   TIER CARD
+================================ */
+
+.player-tier-card{
+    position:relative;
+    width:300px;
+    min-height:96px;
+    padding:10px 14px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    text-align:left;
+    border-radius:14px;
+    background:rgba(10,12,17,.78);
+    border:1px solid rgba(255,255,255,.12);
+    box-shadow:
+        0 10px 25px rgba(0,0,0,.45),
+        inset 0 0 25px rgba(255,255,255,.02);
+    backdrop-filter:blur(12px);
+    overflow:hidden;
+}
+
+.player-tier-card::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(
+        135deg,
+        rgba(255,255,255,.07),
+        transparent 45%,
+        rgba(255,255,255,.025)
+    );
+    pointer-events:none;
+}
+
+.player-tier-image{
+    width:68px;
+    height:68px;
+    object-fit:contain;
+    flex-shrink:0;
+    position:relative;
+    z-index:2;
+    filter:drop-shadow(0 5px 10px rgba(0,0,0,.7));
+}
+
+.player-tier-details{
+    min-width:0;
+    flex:1;
+    position:relative;
+    z-index:2;
+}
+
+.player-tier-label{
+    font-size:.58rem;
+    font-weight:800;
+    color:#777;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    margin-bottom:2px;
+}
+
+.player-tier-name{
+    font-size:1.05rem;
+    font-weight:900;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    white-space:nowrap;
+    margin-bottom:7px;
+}
+
+.tier-progress-track{
+    width:100%;
+    height:7px;
+    background:rgba(255,255,255,.08);
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.6);
+}
+
+.tier-progress-fill{
+    height:100%;
+    width:0%;
+    border-radius:20px;
+    transition:width .8s cubic-bezier(.2,.8,.2,1);
+}
+
+.tier-progress-text{
+    display:flex;
+    justify-content:space-between;
+    gap:5px;
+    margin-top:5px;
+    font-size:.57rem;
+    font-weight:800;
+    color:#777;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+}
+
+/* ================================
+   BRONZE
+================================ */
+
+.tier-bronze{
+    color:#cd7f32!important;
+    text-shadow:0 0 14px rgba(205,127,50,.5);
+}
+
+.tier-progress-fill.tier-bronze{
+    background:#cd7f32!important;
+    box-shadow:0 0 10px rgba(205,127,50,.65);
+}
+
+/* ================================
+   SILVER
+================================ */
+
+.tier-silver{
+    color:#c0c0c0!important;
+    text-shadow:0 0 14px rgba(192,192,192,.5);
+}
+
+.tier-progress-fill.tier-silver{
+    background:#c0c0c0!important;
+    box-shadow:0 0 10px rgba(192,192,192,.65);
+}
+
+/* ================================
+   GOLD
+================================ */
+
+.tier-gold{
+    background:linear-gradient(
+        90deg,
+        #b8860b,
+        #ffd700,
+        #fff3a1,
+        #ffb000,
+        #ffd700,
+        #b8860b
+    );
+    background-size:300% 100%;
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+    animation:tierGold 3s linear infinite;
+}
+
+.tier-progress-fill.tier-gold{
+    background:linear-gradient(
+        90deg,
+        #b8860b,
+        #ffd700,
+        #fff3a1,
+        #ffb000,
+        #ffd700
+    )!important;
+    background-size:300% 100%!important;
+    animation:tierGold 3s linear infinite;
+    box-shadow:0 0 13px rgba(255,215,0,.7);
+}
+
+/* ================================
+   PLATINUM
+================================ */
+
+.tier-platinum{
+    background:linear-gradient(
+        90deg,
+        #EDF9FF,
+        #e5e4e2,
+        #fff,
+        #a9eaff,
+        #fff,
+        #EDF9FF
+    );
+    background-size:300% 100%;
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+    animation:tierPlatinum 3.5s linear infinite;
+}
+
+.tier-progress-fill.tier-platinum{
+    background:linear-gradient(
+        90deg,
+        #888,
+        #e5e4e2,
+        #fff,
+        #a9eaff,
+        #fff,
+        #888
+    )!important;
+    background-size:300% 100%!important;
+    animation:tierPlatinum 3.5s linear infinite;
+    box-shadow:0 0 13px rgba(220,245,255,.8);
+}
+
+/* ================================
+   DIAMOND
+================================ */
+
+.tier-diamond{
+    background:linear-gradient(
+        90deg,
+        #39d9ff,
+        #b9f2ff,
+        #fff,
+        #5dbaff,
+        #8b6cff,
+        #b9f2ff,
+        #39d9ff
+    );
+    background-size:350% 100%;
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+    animation:tierDiamond 3s linear infinite;
+}
+
+.tier-progress-fill.tier-diamond{
+    background:linear-gradient(
+        90deg,
+        #39d9ff,
+        #b9f2ff,
+        #fff,
+        #5dbaff,
+        #8b6cff,
+        #39d9ff
+    )!important;
+    background-size:350% 100%!important;
+    animation:tierDiamond 3s linear infinite;
+    box-shadow:0 0 15px rgba(70,220,255,.8);
+}
+
+/* ================================
+   WAVE MASTER
+   PURPLE + RED ONLY
+================================ */
+
+.tier-wave-master{
+    background:linear-gradient(
+        90deg,
+        #ff3030,
+        #ff4141,
+        #d42cff,
+        #7b20d9,
+        #d42cff,
+        #ff4141,
+        #ff3030
+    );
+    background-size:350% 100%;
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+    animation:tierWaveMaster 2.8s linear infinite;
+}
+
+.tier-progress-fill.tier-wave-master{
+    background:linear-gradient(
+        90deg,
+        #ff3030,
+        #ff4141,
+        #d42cff,
+        #7b20d9,
+        #d42cff,
+        #ff4141
+    )!important;
+    background-size:350% 100%!important;
+    animation:tierWaveMaster 2.8s linear infinite;
+    box-shadow:
+        0 0 16px rgba(255,65,65,.75),
+        0 0 25px rgba(150,45,255,.4);
+}
+
+.wave-master-card{
+    border-color:rgba(181,44,255,.5);
+    box-shadow:
+        0 0 25px rgba(181,44,255,.15),
+        0 0 45px rgba(255,65,65,.08),
+        0 10px 30px rgba(0,0,0,.5);
+}
+
+.wave-master-card::after{
+    content:"";
+    position:absolute;
+    top:0;
+    left:-100%;
+    width:70%;
+    height:100%;
+    background:linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,.1),
+        transparent
+    );
+    animation:tierShine 3.2s infinite;
+    pointer-events:none;
+}
+
+@keyframes tierGold{
+    from{background-position:0% 50%}
+    to{background-position:300% 50%}
+}
+
+@keyframes tierPlatinum{
+    from{background-position:0% 50%}
+    to{background-position:300% 50%}
+}
+
+@keyframes tierDiamond{
+    from{background-position:0% 50%}
+    to{background-position:350% 50%}
+}
+
+@keyframes tierWaveMaster{
+    from{background-position:0% 50%}
+    to{background-position:350% 50%}
+}
+
+@keyframes tierShine{
+    0%{left:-100%}
+    55%,100%{left:150%}
+}
+
+/* ================================
+   STATS
+================================ */
+
+.stats-badges-container{
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+.stats-badge{
+    display:inline-block;
+    background:rgba(255,255,255,.05);
+    color:#fff;
+    padding:8px 18px;
+    border-radius:20px;
+    font-weight:700;
+    font-size:.88rem;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    border:1px solid rgba(255,255,255,.12);
+    backdrop-filter:blur(8px);
+}
+
+.hardest-badge{
+    background:rgba(255,207,75,.1);
+    color:var(--gold);
+    border-color:rgba(255,207,75,.25);
+}
+
+.points-badge{
+    background:rgba(71,229,188,.1);
+    color:var(--accent);
+    border-color:rgba(71,229,188,.3);
+}
+
+/* ================================
+   LEVELS
+================================ */
+
+.section-title{
+    font-size:1.35rem;
+    font-weight:800;
+    margin:45px 0 20px;
+    text-transform:uppercase;
+    letter-spacing:1.5px;
+    color:#fff;
+    border-left:4px solid var(--accent);
+    padding-left:12px;
+}
+
+.completed-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+    gap:22px;
+}
+
+.level-card{
+    position:relative;
+    background:rgba(18,22,31,.85);
+    border:1px solid var(--border);
+    border-radius:14px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    box-shadow:0 10px 30px rgba(0,0,0,.5);
+    transition:all .25s cubic-bezier(.2,.8,.2,1);
+}
+
+.level-card:hover{
+    transform:translateY(-4px);
+    border-color:rgba(255,255,255,.35);
+    box-shadow:0 16px 35px rgba(0,0,0,.7);
+}
+
+.level-card-bg{
+    position:absolute;
+    inset:0;
+    background-size:cover;
+    background-position:center;
+    opacity:.4;
+    transition:all .4s ease;
+    z-index:0;
+}
+
+.level-card:hover .level-card-bg{
+    opacity:.7;
+    transform:scale(1.05);
+}
+
+.level-card-overlay{
+    position:absolute;
+    inset:0;
+    background:linear-gradient(
+        135deg,
+        rgba(11,12,16,.93),
+        rgba(11,12,16,.75)
+    );
+    z-index:1;
+}
+
+.level-info{
+    position:relative;
+    z-index:2;
+    padding:22px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.level-title{
+    font-size:1.25rem;
+    font-weight:800;
+    margin:0;
+    color:#fff;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.level-meta{
+    font-size:.88rem;
+    color:#ccc;
+    font-weight:500;
+}
+
+.unbeaten-card{
+    opacity:.65;
+    border:1px dashed rgba(255,255,255,.15);
+}
+
+.unbeaten-card .level-card-bg{
+    filter:grayscale(90%);
+    opacity:.2;
+}
+
+.tier-PLATINUM{
+    border-color:#e5e4e2!important;
+    color:#e5e4e2!important;
+}
+
+.tier-DIAMOND{
+    border-color:#b9f2ff!important;
+    color:#b9f2ff!important;
+}
+
+.tier-SILVER{
+    border-color:#c0c0c0!important;
+    color:#c0c0c0!important;
+}
+
+.tier-BRONZE{
+    border-color:#cd7f32!important;
+    color:#cd7f32!important;
+}
+
+/* ================================
+   RESPONSIVE
+================================ */
+
+@media(max-width:900px){
+    .player-main-row{
+        flex-direction:column;
+        gap:18px;
+    }
+
+    .player-tier-card{
+        width:100%;
+        max-width:320px;
+    }
+}
+
+@media(max-width:768px){
+    nav{
+        padding:14px 18px;
+    }
+
+    .nav-logo{
+        font-size:1.05rem;
+    }
+
+    .nav-link{
+        font-size:.72rem;
+        padding:6px 8px;
+    }
+
+    .profile-container{
+        margin:25px auto;
+        padding:0 14px;
+    }
+
+    .profile-header{
+        padding:30px 18px;
+        margin-bottom:35px;
+    }
+
+    .profile-name{
+        font-size:2.2rem;
+        max-width:100%;
+        overflow-wrap:anywhere;
+    }
+
+    .completed-grid{
+        grid-template-columns:1fr;
+    }
+
+    .section-title{
+        font-size:1.15rem;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<nav>
+    <div class="nav-logo" onclick="window.location.href='index.html'">
+        THE WAVE LIST
+    </div>
+
+    <div>
+        <a href="index.html" class="nav-link">BACK TO LIST</a>
+    </div>
+</nav>
+
+<div class="profile-container">
+
+    <div class="profile-header">
+
+        <div id="profileBg" class="profile-bg-layer"></div>
+        <div class="profile-bg-overlay"></div>
+
+        <div class="profile-header-content">
+
+            <div class="player-main-row">
+
+                <h1 id="playerNameHeading" class="profile-name">
+                    LOADING...
+                </h1>
+
+                <div id="playerTierCard" class="player-tier-card">
+
+                    <img
+                        id="playerTierImage"
+                        class="player-tier-image"
+                        src=""
+                        alt="Player Tier"
+                    >
+
+                    <div class="player-tier-details">
+
+                        <div class="player-tier-label">
+                            PLAYER TIER
+                        </div>
+
+                        <div id="playerTierName" class="player-tier-name">
+                            LOADING...
+                        </div>
+
+                        <div class="tier-progress-track">
+                            <div
+                                id="tierProgressFill"
+                                class="tier-progress-fill"
+                            ></div>
+                        </div>
+
+                        <div class="tier-progress-text">
+                            <span id="tierProgressCurrent">0 PTS</span>
+                            <span id="tierProgressNext">NEXT TIER</span>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="stats-badges-container">
+
+                <div id="totalPoints" class="stats-badge points-badge">
+                    0 PTS
+                </div>
+
+                <div id="completionCount" class="stats-badge">
+                    0 COMPLETIONS
+                </div>
+
+                <div
+                    id="hardestLevel"
+                    class="stats-badge hardest-badge"
+                    style="display:none;"
+                >
+                    HARDEST: NONE
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <h2 class="section-title">Completed Packs</h2>
+    <div id="packsGrid" class="completed-grid"></div>
+
+    <h2 class="section-title">Completed Levels</h2>
+    <div id="completedGrid" class="completed-grid"></div>
+
+    <h2 class="section-title">Created Levels</h2>
+    <div id="createdGrid" class="completed-grid"></div>
+
+    <h2 class="section-title" style="border-color:#555;">
+        Non-Completed Levels
+    </h2>
+
+    <div id="unbeatenGrid" class="completed-grid"></div>
+
+</div>
+
+<script>
+/* ================================
+   PARTICLES
+================================ */
+
+const canvas=document.getElementById("bg-canvas");
+const ctx=canvas.getContext("2d");
+
+let particles=[];
+
+function initCanvas(){
+    canvas.width=window.innerWidth;
+    canvas.height=window.innerHeight;
+    particles=[];
+
+    for(let i=0;i<65;i++){
+        particles.push({
+            x:Math.random()*canvas.width,
+            y:Math.random()*canvas.height,
+            radius:Math.random()*2+.5,
+            speed:Math.random()*.3+.1
+        });
+    }
+}
+
+function animateCanvas(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    particles.forEach(p=>{
+        ctx.fillStyle="rgba(71,229,188,.2)";
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.radius,0,Math.PI*2);
+        ctx.fill();
+
+        p.y-=p.speed;
+
+        if(p.y<0){
+            p.y=canvas.height;
+        }
+    });
+
+    requestAnimationFrame(animateCanvas);
+}
+
+window.addEventListener("resize",initCanvas);
+initCanvas();
+animateCanvas();
+
+
+/* ================================
+   PLAYER
+================================ */
+
+const urlParams=new URLSearchParams(window.location.search);
+const targetPlayer=urlParams.get("name");
+
+const tierClasses=[
+    "tier-bronze",
+    "tier-silver",
+    "tier-gold",
+    "tier-platinum",
+    "tier-diamond",
+    "tier-wave-master"
+];
+
+const effectClassMap={
+    bronze:"tier-bronze",
+    silver:"tier-silver",
+    gold:"tier-gold",
+    platinum:"tier-platinum",
+    diamond:"tier-diamond",
+    "wave-master-gradient":"tier-wave-master"
+};
+
+
+/* ================================
+   LOAD TIER UI
+================================ */
+
+async function loadTierUI(totalPoints){
+
+    const tierCard=document.getElementById("playerTierCard");
+    const tierImage=document.getElementById("playerTierImage");
+    const tierName=document.getElementById("playerTierName");
+    const progressFill=document.getElementById("tierProgressFill");
+    const progressCurrent=document.getElementById("tierProgressCurrent");
+    const progressNext=document.getElementById("tierProgressNext");
+    const nameHeading=document.getElementById("playerNameHeading");
+
+    try{
+
+        const response=await fetch(
+            "./player-tiers.json?v="+Date.now(),
+            {cache:"no-store"}
+        );
+
+        if(!response.ok){
+            throw new Error(
+                "player-tiers.json returned "+response.status
+            );
+        }
+
+        const tiers=await response.json();
+
+        if(!Array.isArray(tiers)||tiers.length===0){
+            throw new Error("Tier JSON is empty");
+        }
+
+        tiers.sort(
+            (a,b)=>
+                Number(a.minPoints||0)-
+                Number(b.minPoints||0)
+        );
+
+        let currentTier=tiers.find(tier=>{
+
+            const min=Number(tier.minPoints||0);
+
+            const max=
+                tier.maxPoints===null
+                    ? Infinity
+                    : Number(tier.maxPoints);
+
+            return totalPoints>=min&&totalPoints<=max;
+
+        });
+
+        if(!currentTier){
+            currentTier=tiers[0];
+        }
+
+        const effectClass=
+            effectClassMap[currentTier.effect]||
+            "tier-bronze";
+
+        nameHeading.classList.remove(...tierClasses);
+        tierName.classList.remove(...tierClasses);
+        progressFill.classList.remove(...tierClasses);
+
+        nameHeading.classList.add(effectClass);
+        tierName.classList.add(effectClass);
+        progressFill.classList.add(effectClass);
+
+        tierCard.classList.remove("wave-master-card");
+
+        if(currentTier.effect==="wave-master-gradient"){
+            tierCard.classList.add("wave-master-card");
+        }
+
+        tierName.textContent=currentTier.name;
+
+        if(currentTier.image){
+
+            tierImage.style.display="block";
+
+            tierImage.onerror=function(){
+                console.error(
+                    "Tier image failed:",
+                    currentTier.image
+                );
+                this.style.display="none";
+            };
+
+            tierImage.src=currentTier.image;
+            tierImage.alt=currentTier.name;
+        }
+
+        const currentMin=Number(currentTier.minPoints||0);
+
+        if(currentTier.maxPoints===null){
+
+            progressFill.style.width="100%";
+
+            progressCurrent.textContent=
+                totalPoints.toLocaleString()+" PTS";
+
+            progressNext.textContent="MAX TIER";
+
+        }else{
+
+            const nextTier=tiers.find(
+                tier=>
+                    Number(tier.minPoints||0)>currentMin
+            );
+
+            const nextMin=nextTier
+                ? Number(nextTier.minPoints)
+                : Number(currentTier.maxPoints)+1;
+
+            const pointsIntoTier=
+                Math.max(0,totalPoints-currentMin);
+
+            const pointsNeeded=
+                Math.max(1,nextMin-currentMin);
+
+            const progress=Math.min(
+                100,
+                Math.max(
+                    0,
+                    (pointsIntoTier/pointsNeeded)*100
+                )
+            );
+
+            progressFill.style.width=progress+"%";
+
+            progressCurrent.textContent=
+                totalPoints.toLocaleString()+
+                " / "+
+                nextMin.toLocaleString()+
+                " PTS";
+
+            progressNext.textContent=
+                nextTier
+                    ? "NEXT: "+nextTier.name
+                    : "MAX TIER";
+        }
+
+        tierCard.style.display="flex";
+
+    }catch(error){
+
+        console.error("Tier loading error:",error);
+
+        /*
+         IMPORTANT:
+         Do NOT hide the whole player profile if the tier JSON
+         has a problem.
+        */
+
+        tierName.textContent="TIER UNAVAILABLE";
+        progressCurrent.textContent=
+            totalPoints.toLocaleString()+" PTS";
+        progressNext.textContent="CHECK TIER DATA";
+
+        progressFill.style.width="0%";
+        tierCard.style.display="flex";
+    }
+}
+
+
+/* ================================
+   MAIN PLAYER PROFILE
+================================ */
+
+async function loadPlayerProfile(){
+
+    const nameHeading=
+        document.getElementById("playerNameHeading");
+
+    const totalPointsBadge=
+        document.getElementById("totalPoints");
+
+    const countBadge=
+        document.getElementById("completionCount");
+
+    const hardestBadge=
+        document.getElementById("hardestLevel");
+
+    const profileBg=
+        document.getElementById("profileBg");
+
+    const packsGrid=
+        document.getElementById("packsGrid");
+
+    const completedGrid=
+        document.getElementById("completedGrid");
+
+    const createdGrid=
+        document.getElementById("createdGrid");
+
+    const unbeatenGrid=
+        document.getElementById("unbeatenGrid");
+
+
+    if(!targetPlayer){
+
+        nameHeading.textContent="PLAYER NOT FOUND";
+        return;
+    }
+
+    nameHeading.textContent=targetPlayer;
+
+
+    try{
+
+        const levelsResponse=
+            await fetch(
+                "levels.json?v="+Date.now(),
+                {cache:"no-store"}
+            );
+
+        if(!levelsResponse.ok){
+            throw new Error(
+                "levels.json returned "+levelsResponse.status
+            );
+        }
+
+        const data=await levelsResponse.json();
+
+        if(!Array.isArray(data)){
+            throw new Error("levels.json is not an array");
+        }
+
+
+        /* COVER FALLBACK */
+
+        if(data.length>0){
+
+            const firstWithImage=
+                data.find(
+                    level=>level&&level.thumbnail
+                );
+
+            if(firstWithImage){
+                profileBg.style.backgroundImage=
+                    "url(\""+
+                    firstWithImage.thumbnail+
+                    "\")";
+            }
+        }
+
+
+        let packs=[];
+
+        try{
+
+            const packsResponse=
+                await fetch(
+                    "packs.json?v="+Date.now(),
+                    {cache:"no-store"}
+                );
+
+            if(packsResponse.ok){
+
+                const packsData=
+                    await packsResponse.json();
+
+                if(Array.isArray(packsData)){
+                    packs=packsData;
+                }
+
+            }
+
+        }catch(packError){
+
+            console.warn(
+                "packs.json could not be loaded:",
+                packError
+            );
+
+        }
+
+
+        data.sort(
+            (a,b)=>
+                Number(b.points||0)-
+                Number(a.points||0)
+        );
+
+
+        let totalPoints=0;
+        let completionCount=0;
+        let creationCount=0;
+        let unbeatenCount=0;
+
+        let hardestLvl=null;
+        let hardestRank=0;
+
+        const beatenLevelNames=[];
+
+        packsGrid.innerHTML="";
+        completedGrid.innerHTML="";
+        createdGrid.innerHTML="";
+        unbeatenGrid.innerHTML="";
+
+
+        const playerName=
+            String(targetPlayer).toLowerCase();
+
+
+        const levelMap={};
+
+
+        data.forEach((level,index)=>{
+
+            const levelName=
+                String(level.name||"");
+
+            levelMap[levelName.toLowerCase()]={
+
+                ...level,
+
+                rank:index+1
+
+            };
+
+        });
+
+
+        /* ================================
+           PROCESS LEVELS
+        ================================ */
+
+        data.forEach((level,index)=>{
+
+            const rank=index+1;
+
+            const levelName=
+                String(level.name||"Unnamed Level");
+
+
+            const hasBeaten=
+                Array.isArray(level.victors)&&
+                level.victors.some(
+                    v=>
+                        String(
+                            typeof v==="object"
+                                ? v.name||""
+                                : v
+                        ).toLowerCase()===playerName
+                );
+
+
+            const isVerifier=
+                String(
+                    level.verifier||""
+                ).toLowerCase()===playerName;
+
+
+            const isCreator=
+                String(
+                    level.creator||""
+                ).toLowerCase()===playerName;
+
+
+            const imgSource=
+                String(level.thumbnail||"");
+
+
+            /* COMPLETED */
+
+            if(hasBeaten||isVerifier){
+
+                completionCount++;
+
+                beatenLevelNames.push(
+                    levelName.toLowerCase()
+                );
+
+                if(rank<=150){
+
+                    totalPoints+=
+                        Number(level.points||0);
+
+                }
+
+                if(
+                    !hardestLvl||
+                    Number(level.points||0)>
+                    Number(hardestLvl.points||0)
+                ){
+
+                    hardestLvl=level;
+                    hardestRank=rank;
+                }
+
+
+                const card=
+                    document.createElement("div");
+
+                card.className="level-card";
+
+                card.innerHTML=`
+
+                    <div
+                        class="level-card-bg"
+                        style="background-image:url('${imgSource}')"
+                    ></div>
+
+                    <div class="level-card-overlay"></div>
+
+                    <div class="level-info">
+
+                        <h3 class="level-title">
+                            #${rank} - ${levelName}
+                        </h3>
+
+                        <div class="level-meta">
+
+                            <p style="margin:3px 0;">
+                                <strong>Creator:</strong>
+                                ${level.creator||"N/A"}
+                            </p>
+
+                            <p style="margin:3px 0;">
+                                <strong>Value:</strong>
+                                ${
+                                    rank>150
+                                        ?"LEGACY"
+                                        :Number(level.points||0)+" PTS"
+                                }
+                            </p>
+
+                            <p style="margin:3px 0;color:var(--accent);">
+                                <strong>Role:</strong>
+                                ${
+                                    isVerifier
+                                        ?"Verifier"
+                                        :"Victor"
+                                }
+                            </p>
+
+                        </div>
+
+                    </div>
+                `;
+
+                completedGrid.appendChild(card);
+            }
+
+
+            /* CREATED */
+
+            if(isCreator){
+
+                creationCount++;
+
+                const card=
+                    document.createElement("div");
+
+                card.className="level-card";
+
+                card.innerHTML=`
+
+                    <div
+                        class="level-card-bg"
+                        style="background-image:url('${imgSource}')"
+                    ></div>
+
+                    <div class="level-card-overlay"></div>
+
+                    <div class="level-info">
+
+                        <h3 class="level-title">
+                            #${rank} - ${levelName}
+                        </h3>
+
+                        <div class="level-meta">
+
+                            <p style="margin:3px 0;">
+                                <strong>Verifier:</strong>
+                                ${level.verifier||"N/A"}
+                            </p>
+
+                            <p style="margin:3px 0;">
+                                <strong>Value:</strong>
+                                ${
+                                    rank>150
+                                        ?"LEGACY"
+                                        :Number(level.points||0)+" PTS"
+                                }
+                            </p>
+
+                            <p style="margin:3px 0;color:var(--gold);">
+                                <strong>ID:</strong>
+                                ${level.id||"Unknown"}
+                            </p>
+
+                        </div>
+
+                    </div>
+                `;
+
+                createdGrid.appendChild(card);
+            }
+
+
+            /* UNBEATEN */
+
+            if(!hasBeaten&&!isVerifier){
+
+                unbeatenCount++;
+
+                const card=
+                    document.createElement("div");
+
+                card.className=
+                    "level-card unbeaten-card";
+
+                card.innerHTML=`
+
+                    <div
+                        class="level-card-bg"
+                        style="background-image:url('${imgSource}')"
+                    ></div>
+
+                    <div class="level-card-overlay"></div>
+
+                    <div class="level-info">
+
+                        <h3
+                            class="level-title"
+                            style="color:#aaa;"
+                        >
+                            #${rank} - ${levelName}
+                        </h3>
+
+                        <div class="level-meta">
+
+                            <p style="margin:3px 0;">
+                                <strong>Creator:</strong>
+                                ${level.creator||"N/A"}
+                            </p>
+
+                            <p style="margin:3px 0;">
+                                <strong>Value:</strong>
+                                ${
+                                    rank>150
+                                        ?"LEGACY"
+                                        :Number(level.points||0)+" PTS"
+                                }
+                            </p>
+
+                            <p style="margin:3px 0;">
+                                <strong>ID:</strong>
+                                ${level.id||"Unknown"}
+                            </p>
+
+                            <p style="margin:3px 0;color:#666;">
+                                <strong>Status:</strong>
+                                Unbeaten
+                            </p>
+
+                        </div>
+
+                    </div>
+                `;
+
+                unbeatenGrid.appendChild(card);
+            }
+
+        });
+
+
+        /* ================================
+           PACKS
+        ================================ */
+
+        let completedPacksCount=0;
+
+        packs.forEach(pack=>{
+
+            if(!Array.isArray(pack.levels)){
+                return;
+            }
+
+            const isCompleted=
+                pack.levels.every(
+                    levelName=>
+                        beatenLevelNames.includes(
+                            String(levelName).toLowerCase()
+                        )
+                );
+
+            if(!isCompleted){
+                return;
+            }
+
+            completedPacksCount++;
+
+            totalPoints+=Number(pack.points||0);
+
+
+            const firstLvlKey=
+                pack.levels.length
+                    ? String(
+                        pack.levels[0]
+                    ).toLowerCase()
+                    :"";
+
+
+            const firstLevel=
+                levelMap[firstLvlKey];
+
+
+            const packImgSource=
+                firstLevel&&firstLevel.thumbnail
+                    ?firstLevel.thumbnail
+                    :"";
+
+
+            const card=
+                document.createElement("div");
+
+            card.className="level-card";
+
+            card.innerHTML=`
+
+                <div
+                    class="level-card-bg"
+                    style="background-image:url('${packImgSource}')"
+                ></div>
+
+                <div class="level-card-overlay"></div>
+
+                <div class="level-info">
+
+                    <div
+                        style="
+                            display:flex;
+                            justify-content:space-between;
+                            align-items:center;
+                            gap:10px;
+                        "
+                    >
+
+                        <h3
+                            class="level-title"
+                            style="font-size:1.15rem;"
+                        >
+                            ${pack.name||"Unnamed Pack"}
+                        </h3>
+
+                        <span
+                            style="
+                                font-size:.72rem;
+                                font-weight:800;
+                                padding:2px 8px;
+                                border-radius:4px;
+                                background:rgba(255,255,255,.05);
+                                border:1px solid currentColor;
+                            "
+                            class="tier-${pack.tier||""}"
+                        >
+                            ${pack.tier||""}
+                        </span>
+
+                    </div>
+
+                    <div
+                        class="level-meta"
+                        style="margin-top:4px;"
+                    >
+
+                        <p style="margin:3px 0;color:var(--accent);">
+                            <strong>Bonus:</strong>
+                            +${Number(pack.points||0)} PTS
+                        </p>
+
+                        <p
+                            style="
+                                margin:3px 0;
+                                color:#aaa;
+                                font-size:.8rem;
+                            "
+                        >
+                            <strong>Levels:</strong>
+                            ${pack.levels.join(", ")}
+                        </p>
+
+                    </div>
+
+                </div>
+            `;
+
+            packsGrid.appendChild(card);
+
+        });
+
+
+        /* ================================
+           STATS
+        ================================ */
+
+        totalPointsBadge.textContent=
+            totalPoints.toLocaleString()+" PTS";
+
+        countBadge.textContent=
+            completionCount+
+            " "+
+            (
+                completionCount===1
+                    ?"COMPLETION"
+                    :"COMPLETIONS"
+            );
+
+
+        /* ================================
+           TIER
+        ================================ */
+
+        await loadTierUI(totalPoints);
+
+
+        /* ================================
+           PROFILE COVER
+        ================================ */
+
+        if(
+            hardestLvl&&
+            hardestLvl.thumbnail
+        ){
+
+            profileBg.style.backgroundImage=
+                "url(\""+
+                hardestLvl.thumbnail+
+                "\")";
+        }
+
+
+        /* ================================
+           HARDEST
+        ================================ */
+
+        if(hardestLvl){
+
+            hardestBadge.textContent=
+                "HARDEST: #"+
+                hardestRank+
+                " "+
+                String(
+                    hardestLvl.name||""
+                ).toUpperCase()+
+                " ("+
+                Number(
+                    hardestLvl.points||0
+                )+
+                " PTS)";
+
+            hardestBadge.style.display="inline-block";
+
+        }else{
+
+            hardestBadge.style.display="none";
+
+        }
+
+
+        /* ================================
+           EMPTY STATES
+        ================================ */
+
+        if(completedPacksCount===0){
+
+            packsGrid.innerHTML=`
+                <div style="
+                    grid-column:1/-1;
+                    text-align:center;
+                    color:#555;
+                    padding:20px;
+                ">
+                    No completed level packs found for this player.
+                </div>
+            `;
+        }
+
+
+        if(completionCount===0){
+
+            completedGrid.innerHTML=`
+                <div style="
+                    grid-column:1/-1;
+                    text-align:center;
+                    color:#555;
+                    padding:40px;
+                ">
+                    No recorded list records found for this player.
+                </div>
+            `;
+        }
+
+
+        if(creationCount===0){
+
+            createdGrid.innerHTML=`
+                <div style="
+                    grid-column:1/-1;
+                    text-align:center;
+                    color:#555;
+                    padding:40px;
+                ">
+                    No created levels found on the list for this player.
+                </div>
+            `;
+        }
+
+
+        if(unbeatenCount===0){
+
+            unbeatenGrid.innerHTML=`
+                <div style="
+                    grid-column:1/-1;
+                    text-align:center;
+                    color:var(--gold);
+                    padding:40px;
+                    font-weight:700;
+                ">
+                    100% LIST CLEAR!
+                    This player has beaten every level!
+                </div>
+            `;
+        }
+
+    }catch(error){
+
+        console.error(
+            "PLAYER PAGE ERROR:",
+            error
+        );
+
+        /*
+         The header is NOT removed.
+         The page remains usable even if levels.json fails.
+        */
+
+        document.getElementById("completedGrid").innerHTML=`
+            <div style="
+                grid-column:1/-1;
+                text-align:center;
+                color:var(--accent);
+                padding:40px;
+            ">
+                Unable to load player level data.
+            </div>
+        `;
+
+        /*
+         Still attempt to load the tier independently.
+         This is important because the tier should never disappear
+         just because levels.json has an issue.
+        */
+
+        await loadTierUI(0);
+    }
+}
+
+loadPlayerProfile();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SUBMIT PLAYER RECORD</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .submit-container { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 700px; margin: 40px auto; padding: 0 20px; }
+        .submit-card { width: 100%; background: rgba(20, 22, 30, 0.8); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 40px; box-shadow: 0 40px 80px rgba(0,0,0,0.7); backdrop-filter: blur(10px); }
+        .form-title { font-size: 2rem; font-weight: 800; margin-bottom: 5px; text-align: center; }
+        .form-sub { font-size: 0.95rem; color: #888; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 2px; text-align: center; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; width: 100%; text-align: left; }
+        .form-group label { font-size: 0.85rem; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+        .form-group input, .form-group textarea { width: 100%; background: rgba(10, 11, 15, 0.8); border: 1px solid rgba(255,255,255,0.1); padding: 14px; border-radius: 8px; color: #fff; font-size: 1rem; outline: none; font-family: inherit; }
+        .form-group input:focus, .form-group textarea:focus { border-color: var(--accent, #47e5bc); }
+        .submit-btn { width: 100%; background: #fff; color: #000; border: none; padding: 16px; font-size: 1rem; font-weight: 700; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-logo" onclick="window.location.href='index.html'" style="cursor:pointer;">THE WAVE LIST</div>
+        <div>
+            <a href="submit.html" class="nav-link">BACK TO CHOICES</a>
+        </div>
+    </nav>
+
+    <div class="submit-container">
+        <h2 class="form-title">SUBMIT A RECORD RUN</h2>
+        <div class="form-sub">Submit your proof completion video</div>
+        <div class="submit-card">
+            <form onsubmit="handleRecordSubmit(event)">
+                <div class="form-group"><label>Submit Username</label><input type="text" id="recordUser" placeholder="Your in-game name" required></div>
+                <div class="form-group"><label>Level Name</label><input type="text" id="recordLevel" placeholder="Name of level beaten" required></div>
+                <div class="form-group"><label>Add a Video Link</label><input type="url" id="recordVideo" placeholder="https://www.youtube.com/..." required></div>
+                <div class="form-group"><label>Extra Notes</label><textarea id="recordNotes" placeholder="Raw clicks link, refresh rate data, etc..."></textarea></div>
+                <button type="submit" class="submit-btn">Send Run Record</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const GITHUB_USER = "jokewreb";
+        const GITHUB_REPO = "TWL";
+
+        function handleRecordSubmit(event) {
+            event.preventDefault();
+            const user = document.getElementById('recordUser').value;
+            const lvl = document.getElementById('recordLevel').value;
+            const video = document.getElementById('recordVideo').value;
+            const notes = document.getElementById('recordNotes').value || "None";
+
+            const title = encodeURIComponent(`[RECORD] ${lvl} by ${user}`);
+            const body = encodeURIComponent(
+`SUBMIT USERNAME: ${user}
+LEVEL NAME: ${lvl}
+VIDEO LINK: ${video}
+EXTRA NOTES: ${notes}`
+            );
+            window.open(`https://github.com/${GITHUB_USER}/${GITHUB_REPO}/issues/new?title=${title}&body=${body}`, '_blank');
+        }
+    </script>
+</body>
+</html>
