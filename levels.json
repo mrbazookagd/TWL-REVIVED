@@ -38,5 +38,15 @@
     "video": "YsbCsWUVvGA",
     "thumbnail": "Thumbnail/michiwave.png", 
     "victors": ["MrBazooka"] 
+  },
+  { 
+    "name": "whole weat bread",
+    "points": 10, 
+    "creator": "DaegenTimeVR ",
+    "verifier": "DaegenTimeVR ", 
+    "id": "150899010", 
+    "video": "fENIGPd-f7U",
+    "thumbnail": "Thumbnail/wholeweatbread.png", 
+    "victors": ["MrBazooka","sevehweveh"] 
   }
 ]
