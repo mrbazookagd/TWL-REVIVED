@@ -48,5 +48,15 @@
     "video": "YsbCsWUVvGA",
     "thumbnail": "Thumbnail/deadlockedinvis.png", 
     "victors": ["MrBazooka"] 
+  },
+  { 
+    "name": "find me",
+    "points": 25, 
+    "creator": "sevehweveh",
+    "verifier": "sevehweveh", 
+    "id": "151098107", 
+    "video": "jdrxJO4cAic?si=dNNfrp1sTc51bRR-",
+    "thumbnail": "Thumbnail/findme.png", 
+    "victors": ["MrBazooka"] 
   }
 ]
