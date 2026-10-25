@@ -48,5 +48,15 @@
     "video": "fENIGPd-f7U",
     "thumbnail": "Thumbnail/wholeweatbread.png", 
     "victors": ["MrBazooka","sevehweveh"] 
+  },
+  { 
+    "name": "Deadlocked Wave But Invisible",
+    "points": 30, 
+    "creator": "sevehweveh",
+    "verifier": "sevehweveh", 
+    "id": "151240775", 
+    "video": "YsbCsWUVvGA",
+    "thumbnail": "Thumbnail/deadlockedinvis.png", 
+    "victors": ["MrBazooka"] 
   }
 ]
