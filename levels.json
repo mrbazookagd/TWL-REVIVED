@@ -11,7 +11,7 @@
   },
   { 
     "name": "aura tuff spam",
-    "points": 35, 
+    "points": 40, 
     "creator": "ash43",
     "verifier": "ash43", 
     "id": "151095334", 
@@ -30,7 +30,7 @@
     "victors": ["ash43","MrBazooka"] 
   },
   { 
-    "name": "whole weat bread",
+    "name": "whole wheat bread",
     "points": 10, 
     "creator": "DaegenTimeVR ",
     "verifier": "DaegenTimeVR ", 
@@ -41,7 +41,7 @@
   },
   { 
     "name": "Deadlocked Wave But Invisible",
-    "points": 30, 
+    "points": 35, 
     "creator": "sevehweveh",
     "verifier": "sevehweveh", 
     "id": "151240775", 
@@ -57,6 +57,16 @@
     "id": "151098107", 
     "video": "jdrxJO4cAic?si=dNNfrp1sTc51bRR-",
     "thumbnail": "Thumbnail/findme.png", 
+    "victors": ["MrBazooka"] 
+  },
+    { 
+    "name": "whole wheat bread but invisible",
+    "points": 30, 
+    "creator": "sevehweveh",
+    "verifier": "sevehweveh", 
+    "id": "151261680", 
+    "video": "gDm5pjWZmiU",
+    "thumbnail": "Thumbnail/wholeweatbreadinvis.png", 
     "victors": ["MrBazooka"] 
   }
 ]
